@@ -49,82 +49,219 @@ ul { list-style: none; }
 section { padding: 100px 0; }
 
 /* ============================================================
-   CURTAIN INTRO ANIMATION
+   CURTAIN INTRO — PIRATE FANTASY EDITION
 ============================================================ */
 #curtain {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  pointer-events: none; /* allow clicks through once panels gone */
+  pointer-events: all;
 }
 
-/* shared panel base */
+/* ── shared panel ── */
 .curtain-top,
 .curtain-bottom {
   position: fixed;
   left: 0;
   width: 100%;
   height: 50vh;
-  background: #0b1512;
   will-change: transform;
-  transition: transform 1.2s cubic-bezier(0.76, 0, 0.24, 1);
+  transition: transform 1.3s cubic-bezier(0.76, 0, 0.24, 1);
+  overflow: hidden;
 }
 
 .curtain-top {
   top: 0;
+  background: radial-gradient(ellipse at 50% 120%, #0f2a1f 0%, #0b1512 65%);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  padding-bottom: 28px;
-  /* decorative accent line at bottom edge */
-  border-bottom: 1px solid rgba(26,127,110,.35);
 }
 
 .curtain-bottom {
   bottom: 0;
-  /* decorative accent line at top edge */
-  border-top: 1px solid rgba(26,127,110,.35);
+  background: radial-gradient(ellipse at 50% -20%, #0f2a1f 0%, #0b1512 65%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* name + tagline centred in the gap between panels */
+/* ── open / done states ── */
+#curtain.open .curtain-top    { transform: translateY(-100%); }
+#curtain.open .curtain-bottom { transform: translateY(100%); }
+#curtain.open .curtain-content,
+#curtain.open .c-ship-wrap,
+#curtain.open .c-coins        { opacity: 0; transition: opacity 0.25s ease; }
+#curtain.done                 { display: none; }
+
+/* ── centre content (top panel) ── */
 .curtain-content {
+  position: relative;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
   text-align: center;
-  /* fade out just before panels slide */
-  opacity: 1;
-  transition: opacity 0.3s ease;
+  padding: 0 20px;
+  margin-bottom: 24px; /* push up from wave edge */
 }
 
+/* skull icon */
+.c-skull {
+  width: clamp(60px, 10vw, 90px);
+  height: auto;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 0 14px rgba(26,127,110,.7));
+  animation: skull-bob 2.4s ease-in-out infinite;
+}
+@keyframes skull-bob {
+  0%,100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-8px) rotate(3deg); }
+}
+
+/* name */
 .curtain-name {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(1.4rem, 4vw, 2.4rem);
+  font-size: clamp(1.5rem, 5vw, 2.8rem);
   font-weight: 700;
-  letter-spacing: .12em;
-  background: linear-gradient(135deg, #1a7f6e, #9ca3af);
+  letter-spacing: .14em;
+  background: linear-gradient(135deg, #2ec484 0%, #1a7f6e 40%, #9ca3af 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 0 18px rgba(26,127,110,.55));
+  animation: name-glow 2.5s ease-in-out infinite alternate;
+}
+@keyframes name-glow {
+  from { filter: drop-shadow(0 0 8px  rgba(26,127,110,.4)); }
+  to   { filter: drop-shadow(0 0 24px rgba(46,196,132,.75)); }
 }
 
+/* tagline */
 .curtain-tagline {
   font-family: 'Inter', sans-serif;
-  font-size: clamp(.75rem, 1.5vw, .95rem);
+  font-size: clamp(.72rem, 1.8vw, 1rem);
   font-weight: 500;
-  letter-spacing: .22em;
+  letter-spacing: .2em;
   text-transform: uppercase;
-  color: rgba(142,170,160,.7);
+  color: rgba(142,170,160,.8);
 }
 
-/* ── open state: panels fly away ── */
-#curtain.open .curtain-top    { transform: translateY(-100%); }
-#curtain.open .curtain-bottom { transform: translateY(100%); }
-#curtain.open .curtain-content { opacity: 0; }
+/* divider */
+.c-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: clamp(180px, 40vw, 320px);
+}
+.c-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(26,127,110,.6), transparent);
+}
+.c-diamond {
+  font-size: .65rem;
+  color: #1a7f6e;
+  filter: drop-shadow(0 0 6px #1a7f6e);
+}
 
-/* ── done state: remove from paint tree ── */
-#curtain.done { display: none; }
+/* motto */
+.c-motto {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(.7rem, 1.5vw, .88rem);
+  color: rgba(26,127,110,.75);
+  letter-spacing: .15em;
+  font-style: italic;
+}
+
+/* ── wave edges ── */
+.c-wave-wrap {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  line-height: 0;
+}
+.c-wave-top    { bottom: -1px; }
+.c-wave-bottom { top: -1px; }
+.c-wave-wrap svg { width: 100%; height: 60px; display: block; }
+
+/* ── stars (top panel) ── */
+.c-stars {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.c-star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  animation: star-twinkle ease-in-out infinite;
+}
+@keyframes star-twinkle {
+  0%,100% { opacity: .9; transform: scale(1);   }
+  50%      { opacity: .15; transform: scale(.4); }
+}
+
+/* ── fog ── */
+.c-fog {
+  position: absolute;
+  bottom: 0;
+  width: 200%;
+  height: 60%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(26,127,110,.07) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 1;
+}
+.c-fog1 { animation: fog-drift 9s linear infinite; }
+.c-fog2 { animation: fog-drift 13s linear infinite reverse; opacity: .6; }
+@keyframes fog-drift {
+  from { transform: translateX(-25%); }
+  to   { transform: translateX(25%);  }
+}
+
+/* ── ship (bottom panel) ── */
+.c-ship-wrap {
+  position: relative;
+  z-index: 3;
+  width: clamp(160px, 40vw, 260px);
+  animation: ship-rock 3.5s ease-in-out infinite;
+  margin-top: 24px;
+  filter: drop-shadow(0 6px 18px rgba(26,127,110,.4));
+}
+@keyframes ship-rock {
+  0%,100% { transform: rotate(-2deg) translateY(0);   }
+  50%      { transform: rotate(2deg)  translateY(-6px); }
+}
+.c-ship { width: 100%; height: auto; }
+
+/* ── gold coins ── */
+.c-coins {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 2;
+}
+.c-coin {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #2ec484, #1a7f6e);
+  box-shadow: 0 0 6px rgba(46,196,132,.6);
+  animation: coin-float linear infinite;
+}
+@keyframes coin-float {
+  0%   { transform: translateY(0)    rotate(0deg);   opacity: 0; }
+  10%  { opacity: .9; }
+  90%  { opacity: .4; }
+  100% { transform: translateY(-55vh) rotate(360deg); opacity: 0; }
+}
 
 /* ============================================================
    SCROLLBAR

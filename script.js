@@ -1,30 +1,65 @@
 /* ============================================================
-   CURTAIN INTRO ANIMATION
-   Top panel slides UP, bottom panel slides DOWN after a brief
-   hold so the visitor registers the name, then the #curtain
-   wrapper is removed from the paint tree entirely.
+   CURTAIN INTRO ANIMATION — PIRATE FANTASY EDITION
 ============================================================ */
 (function initCurtain() {
   const curtain = document.getElementById('curtain');
   if (!curtain) return;
 
-  /* Short pause (300 ms) so the name is readable, then open */
-  const HOLD_MS    = 500;   /* ms before panels start moving  */
-  const SLIDE_MS   = 1400;  /* must match CSS transition duration */
-  const CLEANUP_MS = SLIDE_MS + 80; /* a tick after transition ends */
+  const HOLD_MS    = 2500;  /* how long curtain stays visible   */
+  const SLIDE_MS   = 1300;  /* must match CSS transition        */
+  const CLEANUP_MS = SLIDE_MS + 100;
 
+  /* ── spawn twinkling stars in top panel ── */
+  const starsWrap = document.getElementById('c-stars');
+  if (starsWrap) {
+    for (let i = 0; i < 55; i++) {
+      const s = document.createElement('div');
+      s.className = 'c-star';
+      const size = Math.random() * 2.5 + 0.8;
+      s.style.cssText = [
+        `width:${size}px`,
+        `height:${size}px`,
+        `left:${Math.random() * 100}%`,
+        `top:${Math.random() * 100}%`,
+        `animation-duration:${(Math.random() * 2.5 + 1.2).toFixed(2)}s`,
+        `animation-delay:${(Math.random() * 3).toFixed(2)}s`,
+      ].join(';');
+      starsWrap.appendChild(s);
+    }
+  }
+
+  /* ── spawn floating coins in bottom panel ── */
+  const coinsWrap = document.getElementById('c-coins');
+  if (coinsWrap) {
+    for (let i = 0; i < 18; i++) {
+      const c = document.createElement('div');
+      c.className = 'c-coin';
+      const size = Math.random() * 6 + 5;
+      c.style.cssText = [
+        `width:${size}px`,
+        `height:${size}px`,
+        `left:${Math.random() * 100}%`,
+        `bottom:${Math.random() * 30}%`,
+        `animation-duration:${(Math.random() * 4 + 3).toFixed(2)}s`,
+        `animation-delay:${(Math.random() * 2.5).toFixed(2)}s`,
+      ].join(';');
+      coinsWrap.appendChild(c);
+    }
+  }
+
+  /* ── lock scroll during animation ── */
+  document.body.style.overflow = 'hidden';
+
+  /* ── trigger slide after hold ── */
   window.addEventListener('load', function () {
     setTimeout(function () {
-      curtain.classList.add('open');               /* triggers CSS slide */
+      curtain.classList.add('open');
       setTimeout(function () {
-        curtain.classList.add('done');             /* display:none        */
-        document.body.style.overflow = '';         /* restore scroll      */
+        curtain.classList.add('done');
+        document.body.style.overflow = '';
       }, CLEANUP_MS);
     }, HOLD_MS);
   });
-
-  /* Prevent scroll during the animation */
-  document.body.style.overflow = 'hidden';
 })();
 
 
